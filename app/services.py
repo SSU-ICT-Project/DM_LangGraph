@@ -261,13 +261,13 @@ def llm_formatter(state: GraphState):
         "Persona: 당신은 일정 안내와 이동 계획을 전문으로 안내하는 AI입니다.\n"
         f"Context: 일정 제목은 '{appointment_title}'이며, 목적지는 '{destination_name}'입니다.\n"
         "Task: 해당 일정의 제목, 목적지, 이동 시간, 날씨를 자연스럽게 두 문장으로만 안내하세요. "
-        "날씨는 누구나 이해할 수 있는 쉬운 표현으로 설명하고(실비 -> 약한비) , 마지막에는 준비를 권유하는 말투로 끝내세요.\n"
-        "Format: 무조건 2문장으로 작성하세요. 표식이나 괄호는 쓰지 마세요.\n\n"
+        "날씨는 누구나 이해할 수 있는 쉬운 표현으로 설명하고 예를 들어 약한비는 약한비로 대체하고 , 마지막에는 준비를 권유하는 말투로 끝내세요. 날씨 설명은 반드시 사람들이 자주 쓰는 단순 용어(예: 맑음, 흐림, 비, 폭우, 폭설) 중 하나로 바꿔서 표현하세요.\n"
+        "Format: 무조건 2문장으로 작성하세요. 표식이나 괄호는 쓰지 마세요. 항상 공손한 말투를 유지하세요.\n\n"
         f"날씨: {weather_text}\n"
         f"이동 시간: {format_time(travel_time)}\n"
     )
     if buffer_time > 0:
-        prompt += f"날씨 때문에 이동이 조금 더 걸릴 수 있어 {buffer_time}분 정도 더 일찍 준비하시는 게 좋아요.\n"
+        prompt += f"날씨 때문에 이동 시간이 조금 더 걸릴 수 있어 {format_time(buffer_time)} 정도 더 일찍 준비하시는 게 좋습니다.\n"
     prompt += f"총 소요 시간: {format_time(total_time)}\n"
 
     # 4. ChatGoogleGenerativeAI를 올바르게 초기화합니다. (model 파라미터 포함)
@@ -276,8 +276,9 @@ def llm_formatter(state: GraphState):
 
     # 5. LLM을 호출하여 최종 추천 메시지를 생성합니다.
     response = llm.invoke(prompt)
+    text = response.content.strip()  # 불필요한 공백 제거
 
-    return {"final_recommendation": response.content}
+    return {"final_recommendation": text}
 
 def weather_condition_branch(state: GraphState) -> str:
     """날씨 상태에 따라 분기합니다."""
