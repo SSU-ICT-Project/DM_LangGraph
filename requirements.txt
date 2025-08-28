@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+redis
+langchain
+langgraph
+langchain-openai  # OpenAI 모델을 사용한다고 가정
+python-dotenv
+requests
+python-dateutil
